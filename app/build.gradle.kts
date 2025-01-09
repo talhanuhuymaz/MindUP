@@ -79,4 +79,9 @@ dependencies {
     implementation ("com.google.firebase:firebase-storage:21.0.1")
     implementation("androidx.compose.runtime:runtime-livedata:1.6.6")
     implementation ("androidx.compose.material:material-icons-extended:1.5.1")
+
+    //mood analytics with charts.
+    implementation("com.patrykandpatrick.vico:core:1.13.1")
+    implementation("com.patrykandpatrick.vico:compose:1.13.1")
+    implementation("com.patrykandpatrick.vico:compose-m3:1.13.1")
 }

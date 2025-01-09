@@ -14,7 +14,7 @@ class AuthViewModel : ViewModel() {
         checkAuthStatus()
     }
 
-    // first fun checkAuthStatus
+
     fun checkAuthStatus(){
         if(auth.currentUser == null){
             _authState.value = AuthState.UnAuthenticated
@@ -24,7 +24,7 @@ class AuthViewModel : ViewModel() {
         }
     }
 
-    // second fun login
+
 
     fun login(email : String , password  :String){
         if(email.isEmpty() || password.isEmpty()){
@@ -45,7 +45,7 @@ class AuthViewModel : ViewModel() {
 
     }
 
-    // third fun signup
+
     fun signup(email : String , password  :String){
         if(email.isEmpty() || password.isEmpty()){
             _authState.value = AuthState.Error("Email and password cannot be empty")
@@ -64,7 +64,7 @@ class AuthViewModel : ViewModel() {
             }
 
     }
-    // fourth fun sign out
+
     fun signOut(){
         auth.signOut()
         _authState.value = AuthState.UnAuthenticated
