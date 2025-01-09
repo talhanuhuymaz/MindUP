@@ -63,93 +63,117 @@ fun LoginPage(modifier: Modifier = Modifier, navController: NavController, authV
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
+            .padding(24.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Spacer(modifier = Modifier.height(48.dp))
 
-        Icon(
-            imageVector = Icons.Default.Lock,
-            contentDescription ="lock icon",
-            tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(120.dp)
-        )
-        Spacer(modifier = Modifier.height(26.dp))
+        // Updated header section
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(bottom = 32.dp)
+        ) {
+            /*Icon(
+                imageVector = Icons.Default.Lock,
+                contentDescription = "lock icon",
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .size(80.dp)
+                    .padding(bottom = 16.dp)
+            )*/
+            Text(
+                text = "Welcome Back",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = "Sign in to continue",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+            )
+        }
 
+        // Updated text fields with better styling
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
-            label = { Text(text = "Email") },
+            label = { Text("Email") },
             singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
-            shape =  RoundedCornerShape(10.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp),
+            shape = RoundedCornerShape(16.dp),
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Email,
-                    contentDescription = "",
+                    contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary
                 )
-
             }
         )
-
-        Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text(text = "Password") },
+            label = { Text("Password") },
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             singleLine = true,
-            shape =  RoundedCornerShape(10.dp),
-            modifier = Modifier.fillMaxWidth(),
-            trailingIcon = {
-                val image =
-                    if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
-                val description = if (passwordVisible) "Hide password" else "Show password"
-                IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                    Icon(imageVector = image, contentDescription = description)
-                }
-            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp),
+            shape = RoundedCornerShape(16.dp),
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Key,
-                    contentDescription = "",
+                    contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary
                 )
-
+            },
+            trailingIcon = {
+                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                    Icon(
+                        imageVector = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                        contentDescription = if (passwordVisible) "Hide password" else "Show password"
+                    )
+                }
             }
-
         )
 
-
-        Spacer(modifier = Modifier.height(20.dp))
-
+        // Updated login button with better styling
         Button(
-            onClick = {
-                authViewModel.login(email,password)
-            },
+            onClick = { authViewModel.login(email, password) },
             enabled = authState.value != AuthState.Loading,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-        ) {
-            Text(text = "Login", fontWeight = FontWeight.Bold, fontSize = 15.sp)
-        }
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        TextButton(
-            onClick = {
-                navController.navigate("signup")
-            }
+                .height(56.dp)
+                .padding(horizontal = 8.dp),
+            shape = RoundedCornerShape(16.dp)
         ) {
             Text(
-                text = "Don't have an account? Sign Up",
-                fontSize = 15.sp,
-                textAlign = TextAlign.Center
+                text = "Login",
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp
             )
         }
-    }
 
+        // Updated sign up section
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Don't have an account?",
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+            )
+            TextButton(onClick = { navController.navigate("signup") }) {
+                Text(
+                    text = "Sign Up",
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+    }
 }
