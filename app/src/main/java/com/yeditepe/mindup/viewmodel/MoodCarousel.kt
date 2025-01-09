@@ -1,61 +1,96 @@
 package com.yeditepe.mindup.viewmodel
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material3.Card
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yeditepe.mindup.R
 
+data class MoodItem(
+    val imageRes: Int,  // Resim kaynağının ID'si
+    val name: String
+)
+
 @Composable
 fun MoodCarousel(onMoodSelected: (String) -> Unit) {
-    val moodList = listOf(
-        R.drawable.happy to "Happy",
-        R.drawable.sad to "Sad",
-        R.drawable.angry to "Angry",
-        R.drawable.relaxed to "Relaxed"
+    val moods = listOf(
+        MoodItem(R.drawable.happy, "Happy"),
+        MoodItem(R.drawable.sad, "Sad"),
+        MoodItem(R.drawable.relaxed, "Calm"),
+        MoodItem(R.drawable.angry, "Angry"),
+        MoodItem(R.drawable.logo, "Anxious"),
+
     )
 
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    var selectedMoodIndex by remember { mutableStateOf(-1) }
+
+    LazyRow(
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier.fillMaxWidth()
     ) {
-        moodList.forEach { (imageRes, mood) ->
-            CircularMoodCard(imageRes = imageRes, mood = mood, onClick = { onMoodSelected(mood) })
+        items(moods) { mood ->
+            MoodCard(
+                mood = mood,
+                isSelected = selectedMoodIndex == moods.indexOf(mood),
+                onClick = {
+                    selectedMoodIndex = moods.indexOf(mood)
+                    onMoodSelected(mood.name)
+                }
+            )
         }
     }
 }
 
 @Composable
-fun CircularMoodCard(imageRes: Int, mood: String, onClick: () -> Unit) {
-    Card(
-        modifier = Modifier
-            .size(80.dp)
-            .clickable { onClick() },
+private fun MoodCard(
+    mood: MoodItem,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.width(80.dp)
     ) {
-        Column(
+        Box(
             modifier = Modifier
-                .padding(8.dp)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .size(60.dp)
+                .background(
+                    color = if (isSelected) Color.Black else Color.White,
+                    shape = CircleShape
+                )
+                .border(
+                    width = 1.dp,
+                    color = if (isSelected) Color.Black else Color.LightGray,
+                    shape = CircleShape
+                )
+                .clickable(onClick = onClick),
+            contentAlignment = Alignment.Center
         ) {
             Image(
-                painter = painterResource(id = imageRes),
-                contentDescription = mood,
-                modifier = Modifier.size(50.dp)
+                painter = painterResource(id = mood.imageRes),
+                contentDescription = mood.name,
+                modifier = Modifier.size(40.dp)  // Resim boyutunu ayarlayabilirsiniz
             )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(text = mood, fontSize = 12.sp)
         }
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = mood.name,
+            fontSize = 12.sp,
+            color = if (isSelected) Color.Black else Color.Gray,
+            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+        )
     }
 }

@@ -53,6 +53,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import com.yeditepe.mindup.viewmodel.MoodCarousel
 
 data class MoodEntry(
     val mood: String,
