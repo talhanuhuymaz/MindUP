@@ -41,6 +41,18 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 
 data class MoodEntry(
     val mood: String,
@@ -71,127 +83,159 @@ fun HomePage(modifier: Modifier = Modifier, navController: NavController, authVi
     Column(
         modifier = modifier
             .fillMaxSize()
+            .background(Color(0xFFF8F9FA))  // Light gray background
             .padding(16.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = "Home Page",
-            fontSize = 32.sp,
-            color = MaterialTheme.colorScheme.primary
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "How are you feeling today?",
-            style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(top = 16.dp)
-        )
+        // Modern header with user greeting
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column {
+                Text(
+                    text = "Hello,",
+                    fontSize = 24.sp,
+                    color = Color.Gray
+                )
+                Text(
+                    text = "How are you today?",
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
+                )
+            }
+            IconButton(
+                onClick = { authViewModel.signOut() },
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(
+                        color = Color(0xFFE0E0E0),
+                        shape = CircleShape
+                    )
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ExitToApp,
+                    contentDescription = "Sign out",
+                    tint = Color.Black
+                )
+            }
+        }
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // MoodCarousel kullanılıyor
-        MoodCarousel { selectedMood ->
-            mood = selectedMood
-        }
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        if (mood.isNotEmpty()) {
-            Text(
-                text = "You selected: $mood",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Arama çubuğu
-        OutlinedTextField(
-            value = note,
-            onValueChange = { note = it },
-            label = { Text("Add a note") },
-            modifier = Modifier.fillMaxWidth(),
-            minLines = 3,
-            maxLines = 5
-        )
-
-
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = {
-                if (mood.isNotEmpty() && note.isNotEmpty()) {
-                    savedEntries = savedEntries + MoodEntry(mood, note)
-                    mood = ""
-                    note = ""
-                }
-            },
-            modifier = Modifier.fillMaxWidth()
+        // Mood selection section
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White),
+            elevation = CardDefaults.cardElevation(0.dp),
+            shape = RoundedCornerShape(16.dp)
         ) {
-            Text("Save Entry")
-        }
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        // Filtrelenmiş ve gruplanmış entry'leri göster
-        if (savedEntries.isNotEmpty()) {
-            Text(
-                text = "Your Entries",
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.align(Alignment.Start)
-            )
-
-            val filteredEntries = savedEntries.filter { entry ->
-                entry.mood.contains(searchQuery, ignoreCase = true) ||
-                        entry.note.contains(searchQuery, ignoreCase = true)
-            }
-
-            AnimatedVisibility(
-                visible = filteredEntries.isNotEmpty(),
-                enter = fadeIn(),
-                exit = fadeOut()
+            Column(
+                modifier = Modifier.padding(16.dp),
+                horizontalAlignment = Alignment.Start
             ) {
-                LazyColumn(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
-                ) {
-                    filteredEntries
-                        .groupBy { it.timestamp.toLocalDate() }
-                        .toSortedMap(compareByDescending { it }) // Sort dates newest first
-                        .forEach { (date, entries) ->
-                            item {
-                                Text(
-                                    text = date.format(DateTimeFormatter.ofPattern("MMMM dd, yyyy")),
-                                    style = MaterialTheme.typography.labelLarge,
-                                    modifier = Modifier.padding(vertical = 8.dp)
-                                )
-                            }
-                            items(entries.sortedByDescending { it.timestamp }) { entry -> // Sort entries newest first
-                                EntryCard(
-                                    entry = entry,
-                                    onDelete = {
-                                        savedEntries = savedEntries.filter { it.id != entry.id }
-                                    }
-                                )
-                                Spacer(modifier = Modifier.height(8.dp))
-                            }
-                        }
+                Text(
+                    text = "Select Mood",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                MoodCarousel { selectedMood ->
+                    mood = selectedMood
                 }
             }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        TextButton(onClick = {
-            authViewModel.signOut()
-        }) {
-            Text(text = "Sign out", color = MaterialTheme.colorScheme.secondary)
+        // Note input section
+        AnimatedVisibility(
+            visible = mood.isNotEmpty(),
+            enter = fadeIn() + expandVertically(),
+            exit = fadeOut() + shrinkVertically()
+        ) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(0.dp),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    OutlinedTextField(
+                        value = note,
+                        onValueChange = { note = it },
+                        label = null,
+                        placeholder = { Text("How are you feeling?") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(120.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            unfocusedBorderColor = Color.Transparent,
+                            focusedBorderColor = Color.Transparent
+                        ),
+                        shape = RoundedCornerShape(12.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Button(
+                        onClick = {
+                            if (mood.isNotEmpty() && note.isNotEmpty()) {
+                                savedEntries = savedEntries + MoodEntry(mood, note)
+                                mood = ""
+                                note = ""
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
+                        shape = RoundedCornerShape(25.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Black
+                        )
+                    ) {
+                        Text("Save Entry", fontSize = 16.sp)
+                    }
+                }
+            }
+        }
+
+        // Entries section
+        if (savedEntries.isNotEmpty()) {
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(top = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                item {
+                    Text(
+                        text = "Recent Entries",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+                }
+
+                items(savedEntries.sortedByDescending { it.timestamp }) { entry ->
+                    EntryCard(entry = entry, onDelete = {
+                        savedEntries = savedEntries.filter { it.id != entry.id }
+                    })
+                }
+            }
         }
     }
 }
@@ -201,8 +245,10 @@ fun EntryCard(entry: MoodEntry, onDelete: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        elevation = CardDefaults.cardElevation(4.dp)
+            .animateContentSize(),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(0.dp),
+        shape = RoundedCornerShape(16.dp)
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -212,27 +258,38 @@ fun EntryCard(entry: MoodEntry, onDelete: () -> Unit) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "Mood: ${entry.mood}",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                IconButton(onClick = onDelete) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = entry.mood,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = " • ${entry.timestamp.format(DateTimeFormatter.ofPattern("HH:mm"))}",
+                        color = Color.Gray
+                    )
+                }
+                IconButton(
+                    onClick = onDelete,
+                    modifier = Modifier
+                        .size(32.dp)
+                        .background(Color(0xFFFFEBEE), CircleShape)
+                ) {
                     Icon(
                         Icons.Default.Delete,
-                        contentDescription = "Delete entry",
-                        tint = MaterialTheme.colorScheme.error
+                        contentDescription = "Delete",
+                        tint = Color(0xFFE57373),
+                        modifier = Modifier.size(16.dp)
                     )
                 }
             }
+
             Spacer(modifier = Modifier.height(8.dp))
+
             Text(
-                text = "Note: ${entry.note}",
-                style = MaterialTheme.typography.bodyMedium
-            )
-            Text(
-                text = entry.timestamp.format(DateTimeFormatter.ofPattern("HH:mm")),
-                style = MaterialTheme.typography.labelSmall,
-                modifier = Modifier.align(Alignment.End)
+                text = entry.note,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.DarkGray
             )
         }
     }
