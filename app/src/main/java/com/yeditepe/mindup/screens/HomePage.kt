@@ -44,6 +44,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -68,6 +69,8 @@ import com.yeditepe.mindup.model.MoodEntry
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.material3.OutlinedButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -333,5 +336,51 @@ fun EntryCard(entry: MoodEntry, onDelete: () -> Unit) {
                 color = Color.DarkGray
             )
         }
+    }
+}
+
+@Composable
+fun MoodCarousel(onMoodSelected: (String) -> Unit) {
+    val moods = listOf(
+        "😊 Happy" to "Happy",
+        "😔 Sad" to "Sad",
+        "😰 Anxious" to "Anxious",
+        "😡 Angry" to "Angry",
+        "😴 Tired" to "Tired",
+        "😌 Calm" to "Calm"
+    )
+
+    LazyRow(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        items(moods) { (display, value) ->
+            MoodChip(
+                text = display,
+                onClick = { onMoodSelected(value) }
+            )
+        }
+    }
+}
+
+@Composable
+fun MoodChip(
+    text: String,
+    onClick: () -> Unit
+) {
+    OutlinedButton(
+        onClick = onClick,
+        modifier = Modifier.height(40.dp),
+        shape = RoundedCornerShape(20.dp),
+        colors = ButtonDefaults.outlinedButtonColors(
+            containerColor = Color.White,
+            contentColor = Color.Black
+        ),
+        border = BorderStroke(1.dp, Color(0xFFE0E0E0))
+    ) {
+        Text(
+            text = text,
+            fontSize = 16.sp
+        )
     }
 }
