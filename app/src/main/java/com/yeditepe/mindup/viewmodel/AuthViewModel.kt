@@ -69,6 +69,46 @@ class AuthViewModel : ViewModel() {
         auth.signOut()
         _authState.value = AuthState.UnAuthenticated
     }
+
+    fun getCurrentUser() = auth.currentUser
+
+    fun updateEmail(newEmail: String, onComplete: (Boolean) -> Unit) {
+        auth.currentUser?.updateEmail(newEmail)
+            ?.addOnCompleteListener { task ->
+                onComplete(task.isSuccessful)
+                if (task.isSuccessful) {
+                    _authState.value = AuthState.Authenticated
+                } else {
+                    _authState.value = AuthState.Error(task.exception?.message ?: "Failed to update email")
+                }
+            }
+    }
+
+    fun updatePassword(newPassword: String, onComplete: (Boolean) -> Unit) {
+        auth.currentUser?.updatePassword(newPassword)
+            ?.addOnCompleteListener { task ->
+                onComplete(task.isSuccessful)
+                if (task.isSuccessful) {
+                    _authState.value = AuthState.Authenticated
+                } else {
+                    _authState.value = AuthState.Error(task.exception?.message ?: "Failed to update password")
+                }
+            }
+    }
+
+    fun deleteAccount(onComplete: (Boolean) -> Unit) {
+        auth.currentUser?.delete()
+            ?.addOnCompleteListener { task ->
+                onComplete(task.isSuccessful)
+                if (task.isSuccessful) {
+                    _authState.value = AuthState.UnAuthenticated
+                } else {
+                    _authState.value = AuthState.Error(task.exception?.message ?: "Failed to delete account")
+                }
+            }
+    }
+
+    fun getAuth(): FirebaseAuth = auth
 }
 sealed class AuthState {
     data object Authenticated : AuthState()
