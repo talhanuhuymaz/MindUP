@@ -71,6 +71,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material3.OutlinedButton
+import com.yeditepe.mindup.components.PageHeader
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -101,29 +102,10 @@ fun HomePage(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Menü butonu
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp),
-            horizontalArrangement = Arrangement.Start
-        ) {
-            IconButton(
-                onClick = onMenuClick,
-                modifier = Modifier
-                    .size(40.dp)
-                    .background(
-                        color = Color(0xFFE0E0E0),
-                        shape = CircleShape
-                    )
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Menu,
-                    contentDescription = "Menu",
-                    tint = Color.Black
-                )
-            }
-        }
+        PageHeader(
+            onMenuClick = onMenuClick,
+            showTitle = false
+        )
 
         // Karşılama metni
         Column(

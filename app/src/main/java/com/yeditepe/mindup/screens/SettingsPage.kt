@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.yeditepe.mindup.viewmodel.AuthViewModel
 import com.google.firebase.auth.FirebaseAuth
+import com.yeditepe.mindup.components.PageHeader
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,36 +48,9 @@ fun SettingsPage(
             .padding(16.dp),
         horizontalAlignment = Alignment.Start
     ) {
-        // Menü butonu
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 24.dp),
-            horizontalArrangement = Arrangement.Start
-        ) {
-            IconButton(
-                onClick = onMenuClick,
-                modifier = Modifier
-                    .size(40.dp)
-                    .background(
-                        color = Color(0xFFE0E0E0),
-                        shape = CircleShape
-                    )
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Menu,
-                    contentDescription = "Menu",
-                    tint = Color.Black
-                )
-            }
-        }
-
-        // Account Settings Header
-        Text(
-            text = "Account Settings",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 24.dp)
+        PageHeader(
+            title = "Settings",
+            onMenuClick = onMenuClick
         )
 
         // Email ve Şifre Bilgileri

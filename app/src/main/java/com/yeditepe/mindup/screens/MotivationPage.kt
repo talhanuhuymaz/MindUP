@@ -3,6 +3,7 @@ package com.yeditepe.mindup.screens
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
@@ -14,6 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.yeditepe.mindup.components.PageHeader
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -23,92 +25,67 @@ fun MotivationPage(
     modifier: Modifier = Modifier,
     onMenuClick: () -> Unit
 ) {
-    val currentDate = LocalDate.now()
-    val dateFormatter = DateTimeFormatter.ofPattern("EEEE, MMMM d")
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        PageHeader(
+            title = "Motivation",
+            onMenuClick = onMenuClick
+        )
 
-    val dailyActivities = listOf(
-        DailyActivity("Monday", "Start Fresh", "🌅 Morning meditation or light exercise"),
-        DailyActivity("Tuesday", "Build Momentum", "📝 Set your top 3 priorities for the week"),
-        DailyActivity("Wednesday", "Mid-Week Boost", "🎯 Review and celebrate your progress"),
-        DailyActivity("Thursday", "Stay Strong", "🌿 Take a mindful break in nature"),
-        DailyActivity("Friday", "Reflect & Plan", "✨ Plan something fun for the weekend"),
-        DailyActivity("Saturday", "Recharge", "🎨 Try a creative activity"),
-        DailyActivity("Sunday", "Prepare & Rest", "🌙 Early bedtime for a fresh start")
-    )
-
-    val todayActivity = dailyActivities[currentDate.dayOfWeek.value - 1]
-
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Daily Motivation") },
-                navigationIcon = {
-                    IconButton(onClick = onMenuClick) {
-                        Icon(Icons.Default.Menu, contentDescription = "Menu")
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.White,
-                    titleContentColor = Color.Black
-                )
-            )
-        }
-    ) { paddingValues ->
-        Column(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+        // Geri kalan içerik
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5)),
+            shape = RoundedCornerShape(12.dp)
         ) {
-            // Tarih gösterimi
-            Text(
-                text = currentDate.format(dateFormatter),
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Medium,
-                color = Color.Black,
-                modifier = Modifier.padding(bottom = 24.dp)
+            val currentDate = LocalDate.now()
+            val dateFormatter = DateTimeFormatter.ofPattern("EEEE, MMMM d")
+
+            val dailyActivities = listOf(
+                DailyActivity("Monday", "Start Fresh", "🌅 Morning meditation or light exercise"),
+                DailyActivity("Tuesday", "Build Momentum", "📝 Set your top 3 priorities for the week"),
+                DailyActivity("Wednesday", "Mid-Week Boost", "🎯 Review and celebrate your progress"),
+                DailyActivity("Thursday", "Stay Strong", "🌿 Take a mindful break in nature"),
+                DailyActivity("Friday", "Reflect & Plan", "✨ Plan something fun for the weekend"),
+                DailyActivity("Saturday", "Recharge", "🎨 Try a creative activity"),
+                DailyActivity("Sunday", "Prepare & Rest", "🌙 Early bedtime for a fresh start")
             )
 
-            // Günün sözü kartı
-            Card(
+            val todayActivity = dailyActivities[currentDate.dayOfWeek.value - 1]
+
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = Color(0xFFF5F5F5)
-                ),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "Today's Activity",
-                        fontSize = 16.sp,
-                        color = Color.Gray,
-                        modifier = Modifier.padding(bottom = 16.dp)
-                    )
-                    
-                    Text(
-                        text = todayActivity.title,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center,
-                        color = Color.Black,
-                        modifier = Modifier.padding(bottom = 16.dp)
-                    )
-                    
-                    Text(
-                        text = todayActivity.suggestion,
-                        fontSize = 16.sp,
-                        color = Color.Gray,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
+                Text(
+                    text = "Today's Activity",
+                    fontSize = 16.sp,
+                    color = Color.Gray,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                
+                Text(
+                    text = todayActivity.title,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    color = Color.Black,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                
+                Text(
+                    text = todayActivity.suggestion,
+                    fontSize = 16.sp,
+                    color = Color.Gray,
+                    fontWeight = FontWeight.Medium
+                )
             }
 
             Spacer(modifier = Modifier.height(32.dp))
