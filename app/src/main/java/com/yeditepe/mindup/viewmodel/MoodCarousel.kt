@@ -31,7 +31,7 @@ fun MoodCarousel(onMoodSelected: (String) -> Unit) {
         MoodItem(R.drawable.sad, "Sad"),
         MoodItem(R.drawable.relaxed, "Calm"),
         MoodItem(R.drawable.angry, "Angry"),
-        MoodItem(R.drawable.logo, "Anxious"),
+        MoodItem(R.drawable.anxious, "Anxious"),
 
     )
 
