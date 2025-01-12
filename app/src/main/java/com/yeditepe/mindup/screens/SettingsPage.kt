@@ -46,6 +46,7 @@ fun SettingsPage(
     var confirmNewEmail by remember { mutableStateOf("") }
     var confirmNewPassword by remember { mutableStateOf("") }
     var emailChangePassword by remember { mutableStateOf("") }
+    var showAboutDialog by remember { mutableStateOf(false) }
 
     val currentUser = authViewModel.getCurrentUser()
     val auth = authViewModel.getAuth()
@@ -62,7 +63,6 @@ fun SettingsPage(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(
@@ -80,13 +80,12 @@ fun SettingsPage(
                     tint = Color.Black
                 )
             }
+            Spacer(modifier = Modifier.width(16.dp))
             Text(
                 text = "Settings",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.SemiBold
             )
-            // Sağ tarafta boşluk için görünmez bir spacer
-            Spacer(modifier = Modifier.size(40.dp))
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -130,7 +129,7 @@ fun SettingsPage(
             SettingsItem(
                 icon = Icons.Default.Info,
                 title = "About MindUP",
-                onClick = { /* About Logic */ }
+                onClick = { showAboutDialog = true }
             )
         }
 
@@ -347,6 +346,27 @@ fun SettingsPage(
                 dismissButton = {
                     TextButton(onClick = { showDeleteDialog = false }) {
                         Text("Cancel")
+                    }
+                }
+            )
+        }
+
+        // About Dialog
+        if (showAboutDialog) {
+            AlertDialog(
+                onDismissRequest = { showAboutDialog = false },
+                title = { Text("About MindUP") },
+                text = {
+                    Text(
+                        "MindUp - Daily Mind App seeks to assist users in observing and improving " +
+                        "their mental health through features like daily mood tracking and mindfulness " +
+                        "activities.",
+                        lineHeight = 24.sp
+                    )
+                },
+                confirmButton = {
+                    TextButton(onClick = { showAboutDialog = false }) {
+                        Text("Close")
                     }
                 }
             )
