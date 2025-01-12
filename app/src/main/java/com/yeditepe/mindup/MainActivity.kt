@@ -15,16 +15,31 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.yeditepe.mindup.navigation.MyAppNavigation
 import com.yeditepe.mindup.ui.theme.MindUPTheme
 import com.yeditepe.mindup.viewmodel.AuthViewModel
+import com.yeditepe.mindup.viewmodel.MoodViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        val authViewModel : AuthViewModel by viewModels()
+        val authViewModel: AuthViewModel by viewModels()
+        val moodViewModel: MoodViewModel by viewModels {
+            object : ViewModelProvider.Factory {
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                    return MoodViewModel(application) as T
+                }
+            }
+        }
+        
         setContent {
             MindUPTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    MyAppNavigation(modifier =  Modifier.padding(innerPadding),authViewModel = authViewModel)
+                    MyAppNavigation(
+                        modifier = Modifier.padding(innerPadding),
+                        authViewModel = authViewModel,
+                        moodViewModel = moodViewModel
+                    )
                 }
             }
         }

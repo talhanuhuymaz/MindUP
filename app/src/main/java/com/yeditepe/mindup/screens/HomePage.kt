@@ -54,21 +54,31 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import com.yeditepe.mindup.viewmodel.MoodCarousel
-
-data class MoodEntry(
-    val mood: String,
-    val note: String,
-    val timestamp: LocalDateTime = LocalDateTime.now(),
-    val id: String = java.util.UUID.randomUUID().toString()
-)
-
-
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.yeditepe.mindup.viewmodel.MoodViewModel
+import androidx.compose.material3.CircularProgressIndicator
+import com.patrykandpatrick.vico.compose.axis.horizontal.bottomAxis
+import com.patrykandpatrick.vico.compose.axis.vertical.startAxis
+import com.patrykandpatrick.vico.compose.chart.Chart
+import com.patrykandpatrick.vico.compose.chart.column.columnChart
+import com.patrykandpatrick.vico.core.entry.FloatEntry
+import com.patrykandpatrick.vico.core.entry.entryModelOf
+import com.yeditepe.mindup.model.MoodEntry
 
 @Composable
-fun HomePage(modifier: Modifier = Modifier, navController: NavController, authViewModel: AuthViewModel) {
-
+fun HomePage(
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    authViewModel: AuthViewModel,
+    moodViewModel: MoodViewModel = viewModel()
+) {
     val authState = authViewModel.authState.observeAsState()
-
+    val moodEntries = moodViewModel.moodEntries.observeAsState(initial = emptyList())
+    val loading = moodViewModel.loading.observeAsState(initial = false)
+    
+    var mood by remember { mutableStateOf("") }
+    var note by remember { mutableStateOf("") }
+    
     LaunchedEffect(authState.value) {
         when (authState.value) {
             is AuthState.UnAuthenticated -> navController.navigate("login")
@@ -76,15 +86,10 @@ fun HomePage(modifier: Modifier = Modifier, navController: NavController, authVi
         }
     }
 
-    var mood by remember { mutableStateOf("") }
-    var note by remember { mutableStateOf("") }
-    var savedEntries by remember { mutableStateOf<List<MoodEntry>>(emptyList()) }
-    var searchQuery by remember { mutableStateOf("") }
-
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFFF8F9FA))  // Light gray background
+            .background(Color(0xFFF8F9FA))
             .padding(16.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -195,7 +200,7 @@ fun HomePage(modifier: Modifier = Modifier, navController: NavController, authVi
                     Button(
                         onClick = {
                             if (mood.isNotEmpty() && note.isNotEmpty()) {
-                                savedEntries = savedEntries + MoodEntry(mood, note)
+                                moodViewModel.addMoodEntry(mood, note)
                                 mood = ""
                                 note = ""
                             }
@@ -208,14 +213,21 @@ fun HomePage(modifier: Modifier = Modifier, navController: NavController, authVi
                             containerColor = Color.Black
                         )
                     ) {
-                        Text("Save Entry", fontSize = 16.sp)
+                        if (loading.value) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                color = Color.White
+                            )
+                        } else {
+                            Text("Save Entry", fontSize = 16.sp)
+                        }
                     }
                 }
             }
         }
 
         // Entries section
-        if (savedEntries.isNotEmpty()) {
+        if (moodEntries.value.isNotEmpty()) {
             LazyColumn(
                 modifier = Modifier
                     .weight(1f)
@@ -231,12 +243,31 @@ fun HomePage(modifier: Modifier = Modifier, navController: NavController, authVi
                     )
                 }
 
-                items(savedEntries.sortedByDescending { it.timestamp }) { entry ->
-                    EntryCard(entry = entry, onDelete = {
-                        savedEntries = savedEntries.filter { it.id != entry.id }
-                    })
+                items(moodEntries.value) { entry ->
+                    EntryCard(
+                        entry = entry,
+                        onDelete = { moodViewModel.deleteMoodEntry(entry.id) }
+                    )
                 }
             }
+        }
+
+        Button(
+            onClick = { navController.navigate("stats") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            ),
+            shape = RoundedCornerShape(16.dp)
+        ) {
+            Text(
+                text = "View Statistics",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(8.dp)
+            )
         }
     }
 }
