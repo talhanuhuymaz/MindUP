@@ -6,8 +6,11 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.*
 import com.yeditepe.mindup.screens.HomePage
 import com.yeditepe.mindup.screens.LoginPage
@@ -41,41 +44,79 @@ fun MyAppNavigation(
         NavigationItem("Home", "home", Icons.Default.Home),
         NavigationItem("Profile", "profile", Icons.Default.Person),
         NavigationItem("Stats", "stats", Icons.Default.Analytics),
-        NavigationItem("Settings", "settings", Icons.Default.Settings),
-        NavigationItem("Motivation", "motivation", Icons.Default.Star)
+        NavigationItem("Motivation", "motivation", Icons.Default.Star),
+        NavigationItem("Settings", "settings", Icons.Default.Settings)
     )
 
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            ModalDrawerSheet {
+            ModalDrawerSheet(
+                modifier = Modifier.width(300.dp)
+            ) {
+                Spacer(modifier = Modifier.height(32.dp))
+                Text(
+                    text = "MindUP",
+                    modifier = Modifier.padding(horizontal = 28.dp, vertical = 16.dp),
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
                 Spacer(modifier = Modifier.height(16.dp))
                 items.forEach { item ->
                     NavigationDrawerItem(
-                        icon = { Icon(item.icon, contentDescription = null) },
-                        label = { Text(item.title) },
+                        icon = { 
+                            Icon(
+                                item.icon,
+                                contentDescription = null,
+                                modifier = Modifier.size(26.dp)
+                            ) 
+                        },
+                        label = { 
+                            Text(
+                                item.title,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Medium
+                            ) 
+                        },
                         selected = false,
                         onClick = {
                             scope.launch {
                                 drawerState.close()
                                 navController.navigate(item.route)
                             }
-                        }
+                        },
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
                     )
                 }
                 Spacer(modifier = Modifier.weight(1f))
                 NavigationDrawerItem(
-                    icon = { Icon(Icons.Default.ExitToApp, contentDescription = null) },
-                    label = { Text("Log Out") },
+                    icon = { 
+                        Icon(
+                            Icons.Default.ExitToApp,
+                            contentDescription = null,
+                            modifier = Modifier.size(26.dp),
+                            tint = Color.Red.copy(alpha = 0.8f)
+                        ) 
+                    },
+                    label = { 
+                        Text(
+                            "Log Out",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = Color.Red.copy(alpha = 0.8f)
+                        ) 
+                    },
                     selected = false,
                     onClick = {
                         scope.launch {
                             drawerState.close()
                             authViewModel.signOut()
                         }
-                    }
+                    },
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
                 )
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(24.dp))
             }
         }
     ) {
@@ -96,7 +137,12 @@ fun MyAppNavigation(
                 )
             }
             composable("stats") {
-                StatsPage(modifier, moodViewModel, navController)
+                StatsPage(
+                    modifier = modifier,
+                    moodViewModel = moodViewModel,
+                    navController = navController,
+                    onMenuClick = { scope.launch { drawerState.open() } }
+                )
             }
             composable("profile") {
                 ProfilePage(
