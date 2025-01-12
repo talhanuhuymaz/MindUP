@@ -6,6 +6,7 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.*
 import com.yeditepe.mindup.screens.HomePage
@@ -14,9 +15,16 @@ import com.yeditepe.mindup.screens.ProfilePage
 import com.yeditepe.mindup.screens.SettingsPage
 import com.yeditepe.mindup.screens.SignupPage
 import com.yeditepe.mindup.screens.StatsPage
+import com.yeditepe.mindup.screens.MotivationPage
 import com.yeditepe.mindup.viewmodel.AuthViewModel
 import com.yeditepe.mindup.viewmodel.MoodViewModel
 import kotlinx.coroutines.launch
+
+data class NavigationItem(
+    val title: String,
+    val route: String,
+    val icon: ImageVector
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,55 +37,32 @@ fun MyAppNavigation(
     val navController = rememberNavController()
     val scope = rememberCoroutineScope()
 
+    val items = listOf(
+        NavigationItem("Home", "home", Icons.Default.Home),
+        NavigationItem("Profile", "profile", Icons.Default.Person),
+        NavigationItem("Stats", "stats", Icons.Default.Analytics),
+        NavigationItem("Settings", "settings", Icons.Default.Settings),
+        NavigationItem("Motivation", "motivation", Icons.Default.Star)
+    )
+
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet {
                 Spacer(modifier = Modifier.height(16.dp))
-                NavigationDrawerItem(
-                    icon = { Icon(Icons.Default.Home, contentDescription = null) },
-                    label = { Text("Home") },
-                    selected = false,
-                    onClick = {
-                        scope.launch {
-                            drawerState.close()
-                            navController.navigate("home")
+                items.forEach { item ->
+                    NavigationDrawerItem(
+                        icon = { Icon(item.icon, contentDescription = null) },
+                        label = { Text(item.title) },
+                        selected = false,
+                        onClick = {
+                            scope.launch {
+                                drawerState.close()
+                                navController.navigate(item.route)
+                            }
                         }
-                    }
-                )
-                NavigationDrawerItem(
-                    icon = { Icon(Icons.Default.Analytics, contentDescription = null) },
-                    label = { Text("Statistics") },
-                    selected = false,
-                    onClick = {
-                        scope.launch {
-                            drawerState.close()
-                            navController.navigate("stats")
-                        }
-                    }
-                )
-                NavigationDrawerItem(
-                    icon = { Icon(Icons.Default.Person, contentDescription = null) },
-                    label = { Text("Profile") },
-                    selected = false,
-                    onClick = {
-                        scope.launch {
-                            drawerState.close()
-                            navController.navigate("profile")
-                        }
-                    }
-                )
-                NavigationDrawerItem(
-                    icon = { Icon(Icons.Default.Settings, contentDescription = null) },
-                    label = { Text("Settings") },
-                    selected = false,
-                    onClick = {
-                        scope.launch {
-                            drawerState.close()
-                            navController.navigate("settings")
-                        }
-                    }
-                )
+                    )
+                }
                 Spacer(modifier = Modifier.weight(1f))
                 NavigationDrawerItem(
                     icon = { Icon(Icons.Default.ExitToApp, contentDescription = null) },
@@ -127,6 +112,12 @@ fun MyAppNavigation(
                     modifier = modifier,
                     navController = navController,
                     authViewModel = authViewModel,
+                    onMenuClick = { scope.launch { drawerState.open() } }
+                )
+            }
+            composable("motivation") {
+                MotivationPage(
+                    modifier = modifier,
                     onMenuClick = { scope.launch { drawerState.open() } }
                 )
             }
