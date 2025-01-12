@@ -18,6 +18,8 @@ import com.yeditepe.mindup.viewmodel.AuthViewModel
 import com.yeditepe.mindup.viewmodel.MoodViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.rememberDrawerState
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,13 +36,13 @@ class MainActivity : ComponentActivity() {
         
         setContent {
             MindUPTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    MyAppNavigation(
-                        modifier = Modifier.padding(innerPadding),
-                        authViewModel = authViewModel,
-                        moodViewModel = moodViewModel
-                    )
-                }
+                val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+                MyAppNavigation(
+                    modifier = Modifier,
+                    authViewModel = authViewModel,
+                    moodViewModel = moodViewModel,
+                    drawerState = drawerState
+                )
             }
         }
     }

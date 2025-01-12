@@ -49,6 +49,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.ui.graphics.Color
@@ -64,13 +65,18 @@ import com.patrykandpatrick.vico.compose.chart.column.columnChart
 import com.patrykandpatrick.vico.core.entry.FloatEntry
 import com.patrykandpatrick.vico.core.entry.entryModelOf
 import com.yeditepe.mindup.model.MoodEntry
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TopAppBar
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomePage(
     modifier: Modifier = Modifier,
     navController: NavController,
     authViewModel: AuthViewModel,
-    moodViewModel: MoodViewModel = viewModel()
+    moodViewModel: MoodViewModel,
+    onMenuClick: () -> Unit
 ) {
     val authState = authViewModel.authState.observeAsState()
     val moodEntries = moodViewModel.moodEntries.observeAsState(initial = emptyList())
@@ -89,34 +95,18 @@ fun HomePage(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFFF8F9FA))
             .padding(16.dp),
-        verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Modern header with user greeting
+        // Menü butonu
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+                .padding(bottom = 16.dp),
+            horizontalArrangement = Arrangement.Start
         ) {
-            Column {
-                Text(
-                    text = "Hello,",
-                    fontSize = 24.sp,
-                    color = Color.Gray
-                )
-                Text(
-                    text = "How are you today?",
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black
-                )
-            }
             IconButton(
-                onClick = { authViewModel.signOut() },
+                onClick = onMenuClick,
                 modifier = Modifier
                     .size(40.dp)
                     .background(
@@ -125,14 +115,32 @@ fun HomePage(
                     )
             ) {
                 Icon(
-                    imageVector = Icons.Default.ExitToApp,
-                    contentDescription = "Sign out",
+                    imageVector = Icons.Default.Menu,
+                    contentDescription = "Menu",
                     tint = Color.Black
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        // Karşılama metni
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp),
+            horizontalAlignment = Alignment.Start
+        ) {
+            Text(
+                text = "Hello,",
+                fontSize = 24.sp,
+                color = Color.Gray
+            )
+            Text(
+                text = "How are you today?",
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            )
+        }
 
         // Mood selection section
         Card(
@@ -211,7 +219,8 @@ fun HomePage(
                         shape = RoundedCornerShape(25.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Black
-                        )
+                        ),
+                        enabled = mood.isNotEmpty() && note.isNotEmpty()
                     ) {
                         if (loading.value) {
                             CircularProgressIndicator(
