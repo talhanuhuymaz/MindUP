@@ -8,6 +8,7 @@ import java.time.LocalDateTime
 data class MoodEntry(
     @PrimaryKey
     val id: String = java.util.UUID.randomUUID().toString(),
+    val userId: String = "",
     val mood: String = "",
     val note: String = "",
     val timestamp: LocalDateTime = LocalDateTime.now()
