@@ -1,16 +1,24 @@
 package com.yeditepe.mindup.screens
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -18,7 +26,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.yeditepe.mindup.viewmodel.AuthViewModel
 import com.google.firebase.auth.FirebaseAuth
-import com.yeditepe.mindup.components.PageHeader
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,6 +35,7 @@ fun SettingsPage(
     authViewModel: AuthViewModel,
     onMenuClick: () -> Unit
 ) {
+    val context = LocalContext.current
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showChangeEmailDialog by remember { mutableStateOf(false) }
     var showChangePasswordDialog by remember { mutableStateOf(false) }
@@ -38,6 +46,7 @@ fun SettingsPage(
     var confirmNewEmail by remember { mutableStateOf("") }
     var confirmNewPassword by remember { mutableStateOf("") }
     var emailChangePassword by remember { mutableStateOf("") }
+    var showAboutDialog by remember { mutableStateOf(false) }
 
     val currentUser = authViewModel.getCurrentUser()
     val auth = authViewModel.getAuth()
@@ -45,99 +54,99 @@ fun SettingsPage(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .background(Color(0xFFF5F5F5))
+            .padding(top = 16.dp),
         horizontalAlignment = Alignment.Start
     ) {
-        PageHeader(
-            title = "Settings",
-            onMenuClick = onMenuClick
-        )
-
-        // Email ve Şifre Bilgileri
-        Card(
+        // Menü butonu ve başlık
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 16.dp),
-            colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5)),
-            shape = RoundedCornerShape(12.dp)
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(
-                modifier = Modifier.padding(16.dp)
+            IconButton(
+                onClick = onMenuClick,
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(
+                        color = Color(0xFFE0E0E0),
+                        shape = CircleShape
+                    )
             ) {
-                Text(
-                    text = "Email",
-                    fontSize = 14.sp,
-                    color = Color.Gray
-                )
-                Text(
-                    text = currentUser?.email ?: "Not signed in",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium
+                Icon(
+                    imageVector = Icons.Default.Menu,
+                    contentDescription = "Menu",
+                    tint = Color.Black
                 )
             }
+            Spacer(modifier = Modifier.width(16.dp))
+            Text(
+                text = "Settings",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.SemiBold
+            )
         }
 
-        // Butonlar
-        OutlinedButton(
-            onClick = { showChangeEmailDialog = true },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            shape = RoundedCornerShape(8.dp)
-        ) {
-            Icon(
-                Icons.Default.Email,
-                contentDescription = null,
-                modifier = Modifier.padding(end = 8.dp)
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Account Section
+        SettingsSection(title = "Account") {
+            SettingsItem(
+                icon = Icons.Default.Person,
+                title = "Email",
+                subtitle = currentUser?.email ?: "Not signed in",
+                showDivider = true
             )
-            Text("Change Email")
+            SettingsItem(
+                icon = Icons.Default.Email,
+                title = "Change Email",
+                onClick = { showChangeEmailDialog = true },
+                showDivider = true
+            )
+            SettingsItem(
+                icon = Icons.Default.Lock,
+                title = "Change Password",
+                onClick = { showChangePasswordDialog = true }
+            )
         }
 
-        OutlinedButton(
-            onClick = { showChangePasswordDialog = true },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            shape = RoundedCornerShape(8.dp)
-        ) {
-            Icon(
-                Icons.Default.Lock,
-                contentDescription = null,
-                modifier = Modifier.padding(end = 8.dp)
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Support Section
+        SettingsSection(title = "Support") {
+            SettingsItem(
+                icon = Icons.Default.Email,
+                title = "Contact Us",
+                subtitle = "mindup@contact.com"
             )
-            Text("Change Password")
         }
 
-        OutlinedButton(
-            onClick = { /* About Logic */ },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            shape = RoundedCornerShape(8.dp)
-        ) {
-            Icon(
-                Icons.Default.Info,
-                contentDescription = null,
-                modifier = Modifier.padding(end = 8.dp)
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // About Section
+        SettingsSection(title = "About") {
+            SettingsItem(
+                icon = Icons.Default.Info,
+                title = "About MindUP",
+                onClick = { showAboutDialog = true }
             )
-            Text("About")
         }
 
         Spacer(modifier = Modifier.weight(1f))
 
         // Delete Account Button
-        Button(
+        TextButton(
             onClick = { showDeleteDialog = true },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
-            shape = RoundedCornerShape(8.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
         ) {
-            Icon(
-                Icons.Default.Delete,
-                contentDescription = null,
-                modifier = Modifier.padding(end = 8.dp)
+            Text(
+                "Delete Account",
+                color = Color.Red,
+                fontWeight = FontWeight.Medium
             )
-            Text("Delete Account")
         }
 
         // Change Email Dialog
@@ -339,6 +348,118 @@ fun SettingsPage(
                         Text("Cancel")
                     }
                 }
+            )
+        }
+
+        // About Dialog
+        if (showAboutDialog) {
+            AlertDialog(
+                onDismissRequest = { showAboutDialog = false },
+                title = { Text("About MindUP") },
+                text = {
+                    Text(
+                        "MindUp - Daily Mind App seeks to assist users in observing and improving " +
+                        "their mental health through features like daily mood tracking and mindfulness " +
+                        "activities.",
+                        lineHeight = 24.sp
+                    )
+                },
+                confirmButton = {
+                    TextButton(onClick = { showAboutDialog = false }) {
+                        Text("Close")
+                    }
+                }
+            )
+        }
+    }
+}
+
+@Composable
+private fun SettingsSection(
+    title: String,
+    content: @Composable () -> Unit
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(
+            text = title,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            color = MaterialTheme.colorScheme.primary,
+            fontWeight = FontWeight.Medium
+        )
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color.White
+            ),
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            content()
+        }
+    }
+}
+
+@Composable
+private fun SettingsItem(
+    icon: ImageVector,
+    title: String,
+    subtitle: String? = null,
+    showDivider: Boolean = false,
+    onClick: (() -> Unit)? = null
+) {
+    val modifier = if (onClick != null) {
+        Modifier.clickable(onClick = onClick)
+    } else {
+        Modifier
+    }
+
+    Column(
+        modifier = modifier
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(24.dp)
+            )
+            Spacer(modifier = Modifier.width(16.dp))
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = title,
+                    fontSize = 16.sp,
+                    color = Color.Black
+                )
+                if (subtitle != null) {
+                    Text(
+                        text = subtitle,
+                        fontSize = 14.sp,
+                        color = Color.Gray
+                    )
+                }
+            }
+            if (onClick != null) {
+                Icon(
+                    imageVector = Icons.Default.ChevronRight,
+                    contentDescription = null,
+                    tint = Color.Gray
+                )
+            }
+        }
+        if (showDivider) {
+            Divider(
+                modifier = Modifier.padding(start = 56.dp),
+                color = Color(0xFFE0E0E0)
             )
         }
     }
