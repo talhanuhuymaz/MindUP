@@ -20,11 +20,29 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.rememberDrawerState
+import android.content.pm.PackageManager
+import android.os.Build
+import com.yeditepe.mindup.notification.NotificationHelper
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        
+        // Bildirim izinlerini kontrol et
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != 
+                PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(
+                    arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                    100
+                )
+            }
+        }
+        
+        // Hatırlatıcıyı başlat
+        NotificationHelper(this).scheduleReminder()
+        
         val authViewModel: AuthViewModel by viewModels()
         val moodViewModel: MoodViewModel by viewModels {
             object : ViewModelProvider.Factory {
@@ -44,6 +62,19 @@ class MainActivity : ComponentActivity() {
                     drawerState = drawerState
                 )
             }
+        }
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 100 && grantResults.isNotEmpty() && 
+            grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            NotificationHelper(this).scheduleReminder()
         }
     }
 }
