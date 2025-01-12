@@ -25,156 +25,169 @@ import java.time.temporal.ChronoUnit
 import androidx.compose.foundation.Image
 import androidx.compose.ui.res.painterResource
 import com.yeditepe.mindup.R
+import com.yeditepe.mindup.components.PageHeader
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StatsPage(
     modifier: Modifier = Modifier,
     moodViewModel: MoodViewModel,
-    navController: NavController
+    navController: NavController,
+    onMenuClick: () -> Unit
 ) {
-    val moodEntries = moodViewModel.moodEntries.observeAsState(initial = emptyList())
-    val scrollState = rememberScrollState()
-
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFFF8F9FA))
-            .verticalScroll(scrollState)
+            .padding(16.dp)
     ) {
-        // Top App Bar
-        TopAppBar(
-            title = { Text("Mood Analytics") },
-            navigationIcon = {
-                IconButton(onClick = { navController.navigateUp() }) {
-                    Icon(Icons.Default.ArrowBack, "Back")
-                }
-            },
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = Color.White
-            )
+        PageHeader(
+            title = "Statistics",
+            onMenuClick = onMenuClick
         )
+        
+        val moodEntries = moodViewModel.moodEntries.observeAsState(initial = emptyList())
+        val scrollState = rememberScrollState()
 
-        // Content
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFFF8F9FA))
+                .verticalScroll(scrollState)
         ) {
-            // Dominant Mood Card
-            val dominantMood = moodEntries.value
-                .groupBy { it.mood }
-                .maxByOrNull { it.value.size }
-                ?.key ?: "No data"
+            // Top App Bar
+            TopAppBar(
+                title = { Text("Mood Analytics") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigateUp() }) {
+                        Icon(Icons.Default.ArrowBack, "Back")
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.White
+                )
+            )
 
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(0.dp),
-                shape = RoundedCornerShape(16.dp)
+            // Content
+            Column(
+                modifier = Modifier.padding(16.dp)
             ) {
-                Row(
+                // Dominant Mood Card
+                val dominantMood = moodEntries.value
+                    .groupBy { it.mood }
+                    .maxByOrNull { it.value.size }
+                    ?.key ?: "No data"
+
+                Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column {
-                        Text(
-                            text = "Dominant Mood",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = Color.Gray
-                        )
-                        Text(
-                            text = dominantMood,
-                            style = MaterialTheme.typography.headlineMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                    Image(
-                        painter = painterResource(getMoodIconResource(dominantMood)),
-                        contentDescription = dominantMood,
-                        modifier = Modifier.size(48.dp)
-                    )
-                }
-            }
-
-            // Weekly Patterns Card
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(0.dp),
-                shape = RoundedCornerShape(16.dp)
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp)
+                        .padding(vertical = 8.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(0.dp),
+                    shape = RoundedCornerShape(16.dp)
                 ) {
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            text = "Weekly Patterns",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Icon(
-                            imageVector = Icons.Default.Timeline,
-                            contentDescription = null,
-                            modifier = Modifier.size(24.dp),
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                    
-                    Spacer(modifier = Modifier.height(16.dp))
-                    
-                    WeeklyMoodDistribution(moodEntries.value)
-                    
-                    Spacer(modifier = Modifier.height(16.dp))
-                    
-                    val stats = moodViewModel.getMoodStats()
-                    stats.forEach { (mood, count) ->
-                        val percentage = (count.toFloat() / moodEntries.value.size * 100).toInt()
-                        MoodDistributionItem(
-                            mood = mood,
-                            count = count,
-                            percentage = percentage
+                        Column {
+                            Text(
+                                text = "Dominant Mood",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = Color.Gray
+                            )
+                            Text(
+                                text = dominantMood,
+                                style = MaterialTheme.typography.headlineMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                        Image(
+                            painter = painterResource(getMoodIconResource(dominantMood)),
+                            contentDescription = dominantMood,
+                            modifier = Modifier.size(48.dp)
                         )
                     }
                 }
-            }
 
-            // Insights Card
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(0.dp),
-                shape = RoundedCornerShape(16.dp)
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp)
+                // Weekly Patterns Card
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(0.dp),
+                    shape = RoundedCornerShape(16.dp)
                 ) {
-                    Text(
-                        text = "Insights",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                    
-                    Spacer(modifier = Modifier.height(8.dp))
-                    
-                    val insights = generateInsights(moodEntries.value)
-                    insights.forEach { insight ->
+                    Column(
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Weekly Patterns",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Icon(
+                                imageVector = Icons.Default.Timeline,
+                                contentDescription = null,
+                                modifier = Modifier.size(24.dp),
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                        
+                        Spacer(modifier = Modifier.height(16.dp))
+                        
+                        WeeklyMoodDistribution(moodEntries.value)
+                        
+                        Spacer(modifier = Modifier.height(16.dp))
+                        
+                        val stats = moodViewModel.getMoodStats()
+                        stats.forEach { (mood, count) ->
+                            val percentage = (count.toFloat() / moodEntries.value.size * 100).toInt()
+                            MoodDistributionItem(
+                                mood = mood,
+                                count = count,
+                                percentage = percentage
+                            )
+                        }
+                    }
+                }
+
+                // Insights Card
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(0.dp),
+                    shape = RoundedCornerShape(16.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp)
+                    ) {
                         Text(
-                            text = "• $insight",
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.padding(vertical = 4.dp)
+                            text = "Insights",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
                         )
+                        
+                        Spacer(modifier = Modifier.height(8.dp))
+                        
+                        val insights = generateInsights(moodEntries.value)
+                        insights.forEach { insight ->
+                            Text(
+                                text = "• $insight",
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.padding(vertical = 4.dp)
+                            )
+                        }
                     }
                 }
             }
