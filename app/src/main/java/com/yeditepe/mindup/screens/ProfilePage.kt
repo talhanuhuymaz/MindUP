@@ -29,6 +29,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import com.yeditepe.mindup.model.MoodEntry
 import androidx.compose.ui.draw.shadow
+import com.yeditepe.mindup.components.PageHeader
 
 @Composable
 fun ProfilePage(
@@ -47,29 +48,10 @@ fun ProfilePage(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Menü butonu
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 24.dp),
-            horizontalArrangement = Arrangement.Start
-        ) {
-            IconButton(
-                onClick = onMenuClick,
-                modifier = Modifier
-                    .size(40.dp)
-                    .background(
-                        color = Color(0xFFE0E0E0),
-                        shape = CircleShape
-                    )
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Menu,
-                    contentDescription = "Menu",
-                    tint = Color.Black
-                )
-            }
-        }
+        PageHeader(
+            title = "Profile",
+            onMenuClick = onMenuClick
+        )
 
         // Profil Fotoğrafı ve Bilgiler
         Card(
