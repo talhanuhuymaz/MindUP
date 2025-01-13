@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.yeditepe.mindup.viewmodel.AuthViewModel
 import com.google.firebase.auth.FirebaseAuth
+import com.yeditepe.mindup.components.PageHeader
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,38 +56,13 @@ fun SettingsPage(
         modifier = modifier
             .fillMaxSize()
             .background(Color(0xFFF5F5F5))
-            .padding(top = 16.dp),
+            .padding(16.dp),
         horizontalAlignment = Alignment.Start
     ) {
-        // Menü butonu ve başlık
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(
-                onClick = onMenuClick,
-                modifier = Modifier
-                    .size(40.dp)
-                    .background(
-                        color = Color(0xFFE0E0E0),
-                        shape = CircleShape
-                    )
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Menu,
-                    contentDescription = "Menu",
-                    tint = Color.Black
-                )
-            }
-            Spacer(modifier = Modifier.width(16.dp))
-            Text(
-                text = "Settings",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.SemiBold
-            )
-        }
+        PageHeader(
+            title = "Settings",
+            onMenuClick = onMenuClick
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
