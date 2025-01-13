@@ -296,8 +296,9 @@ private fun getMoodIconResource(mood: String): Int {
         "happy" -> R.drawable.happy
         "sad" -> R.drawable.sad
         "calm" -> R.drawable.relaxed
-        // diğer mood'lar için gerekli case'leri ekleyin
-        else -> R.drawable.happy // varsayılan ikon
+        "anxious" -> R.drawable.anxious
+        "angry" -> R.drawable.angry
+        else -> R.drawable.happy // varsayılan
     }
 }
 
