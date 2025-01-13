@@ -24,18 +24,16 @@ class NotificationHelper(private val context: Context) {
     }
 
     private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                CHANNEL_ID,
-                "Mood Entry Reminders",
-                NotificationManager.IMPORTANCE_HIGH
-            ).apply {
-                description = "Reminds users to log their mood"
-                enableLights(true)
-                enableVibration(true)
-            }
-            notificationManager.createNotificationChannel(channel)
+        val channel = NotificationChannel(
+            CHANNEL_ID,
+            "Mood Entry Reminders",
+            NotificationManager.IMPORTANCE_HIGH
+        ).apply {
+            description = "Reminds users to log their mood"
+            enableLights(true)
+            enableVibration(true)
         }
+        notificationManager.createNotificationChannel(channel)
     }
 
     fun showNotification() {

@@ -6,8 +6,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Mood
 import androidx.compose.material.icons.filled.Timeline
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -17,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.yeditepe.mindup.viewmodel.MoodViewModel
 import com.yeditepe.mindup.model.MoodEntry
 import java.time.LocalDateTime
@@ -27,12 +24,11 @@ import androidx.compose.ui.res.painterResource
 import com.yeditepe.mindup.R
 import com.yeditepe.mindup.components.PageHeader
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun StatsPage(
     modifier: Modifier = Modifier,
     moodViewModel: MoodViewModel,
-    navController: NavController,
     onMenuClick: () -> Unit
 ) {
     Column(
@@ -317,33 +313,6 @@ private fun generateInsights(entries: List<MoodEntry>): List<String> {
     }
     
     return insights
-}
-
-@Composable
-private fun MoodPatternsCard(entries: List<MoodEntry>) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(0.dp),
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Text(
-                text = "Mood Patterns",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
-            
-            Spacer(modifier = Modifier.height(16.dp))
-            
-            // Weekly mood distribution
-            WeeklyMoodDistribution(entries)
-        }
-    }
 }
 
 @Composable

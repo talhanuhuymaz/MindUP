@@ -9,7 +9,6 @@ import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.yeditepe.mindup.data.AppDatabase
 import com.yeditepe.mindup.model.MoodEntry
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import com.google.firebase.auth.FirebaseAuth
@@ -19,7 +18,7 @@ class MoodViewModel(application: Application) : AndroidViewModel(application) {
     private val moodDao = database.moodDao()
     private val auth = FirebaseAuth.getInstance()
     
-    private val _loading = MutableLiveData<Boolean>(false)
+    private val _loading = MutableLiveData(false)
     val loading: LiveData<Boolean> = _loading
     
     private val _currentUserId = MutableLiveData<String?>()

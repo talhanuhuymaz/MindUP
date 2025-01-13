@@ -29,7 +29,6 @@ data class NavigationItem(
     val icon: ImageVector
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyAppNavigation(
     modifier: Modifier = Modifier,
@@ -122,7 +121,7 @@ fun MyAppNavigation(
     ) {
         NavHost(navController = navController, startDestination = "login") {
             composable("login") {
-                LoginPage(modifier, navController, authViewModel)
+                LoginPage(navController, authViewModel)
             }
             composable("signup") {
                 SignupPage(modifier, navController, authViewModel)
@@ -140,14 +139,12 @@ fun MyAppNavigation(
                 StatsPage(
                     modifier = modifier,
                     moodViewModel = moodViewModel,
-                    navController = navController,
                     onMenuClick = { scope.launch { drawerState.open() } }
                 )
             }
             composable("profile") {
                 ProfilePage(
                     modifier = modifier,
-                    navController = navController,
                     authViewModel = authViewModel,
                     moodViewModel = moodViewModel,
                     onMenuClick = { scope.launch { drawerState.open() } }

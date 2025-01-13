@@ -6,10 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.LocalFireDepartment
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -21,7 +18,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.yeditepe.mindup.viewmodel.AuthViewModel
 import com.yeditepe.mindup.viewmodel.MoodViewModel
 import com.yeditepe.mindup.R
@@ -32,11 +28,31 @@ import androidx.compose.ui.draw.shadow
 import com.yeditepe.mindup.components.PageHeader
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.draw.clip
+
+private val avatarList = listOf(
+    R.drawable.fox,
+    R.drawable.cat,
+    R.drawable.batman,
+    R.drawable.joker,
+
+)
 
 @Composable
 fun ProfilePage(
     modifier: Modifier = Modifier,
-    navController: NavController,
     authViewModel: AuthViewModel,
     moodViewModel: MoodViewModel,
     onMenuClick: () -> Unit
@@ -44,6 +60,8 @@ fun ProfilePage(
     val moodEntries = moodViewModel.moodEntries.observeAsState(initial = emptyList())
     val currentUser = authViewModel.getCurrentUser()
     val scrollState = rememberScrollState()
+    var showAvatarDialog by remember { mutableStateOf(false) }
+    var selectedAvatar by remember { mutableStateOf(R.drawable.fox) }
 
     Column(
         modifier = modifier
@@ -62,7 +80,7 @@ fun ProfilePage(
                 .verticalScroll(scrollState),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Profil Fotoğrafı ve Bilgiler
+
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -76,20 +94,14 @@ fun ProfilePage(
                         .padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Box(
+                    Image(
+                        painter = painterResource(id = selectedAvatar),
+                        contentDescription = "Profile Picture",
                         modifier = Modifier
-                            .size(100.dp)
-                            .background(Color.Gray.copy(alpha = 0.2f), CircleShape)
-                            .padding(16.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Person,
-                            contentDescription = "Profile Picture",
-                            modifier = Modifier.size(60.dp),
-                            tint = Color.Gray
-                        )
-                    }
+                            .size(120.dp)
+                            .clip(CircleShape)
+                            .clickable { showAvatarDialog = true }
+                    )
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         text = currentUser?.email ?: "Not signed in",
@@ -122,7 +134,7 @@ fun ProfilePage(
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
 
-                    // Mood istatistikleri
+
                     val moodStats = moodEntries.value
                         .groupBy { it.mood }
                         .mapValues { it.value.size }
@@ -298,6 +310,39 @@ fun ProfilePage(
                 }
             }
         }
+
+        if (showAvatarDialog) {
+            AlertDialog(
+                onDismissRequest = { showAvatarDialog = false },
+                title = { Text("Choose Avatar") },
+                text = {
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(3),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(avatarList) { avatar ->
+                            Image(
+                                painter = painterResource(id = avatar),
+                                contentDescription = "Avatar Option",
+                                modifier = Modifier
+                                    .size(80.dp)
+                                    .clip(CircleShape)
+                                    .clickable {
+                                        selectedAvatar = avatar
+                                        showAvatarDialog = false
+                                    }
+                            )
+                        }
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = { showAvatarDialog = false }) {
+                        Text("Cancel")
+                    }
+                }
+            )
+        }
     }
 }
 
@@ -308,7 +353,7 @@ private fun getMoodIconResource(mood: String): Int {
         "calm" -> R.drawable.relaxed
         "anxious" -> R.drawable.anxious
         "angry" -> R.drawable.angry
-        else -> R.drawable.happy // varsayılan
+        else -> R.drawable.happy
     }
 }
 

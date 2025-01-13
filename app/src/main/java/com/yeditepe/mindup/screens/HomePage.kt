@@ -13,7 +13,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -37,43 +36,26 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.filled.ExitToApp
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import com.yeditepe.mindup.viewmodel.MoodCarousel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.yeditepe.mindup.viewmodel.MoodViewModel
 import androidx.compose.material3.CircularProgressIndicator
-import com.patrykandpatrick.vico.compose.axis.horizontal.bottomAxis
-import com.patrykandpatrick.vico.compose.axis.vertical.startAxis
-import com.patrykandpatrick.vico.compose.chart.Chart
-import com.patrykandpatrick.vico.compose.chart.column.columnChart
-import com.patrykandpatrick.vico.core.entry.FloatEntry
-import com.patrykandpatrick.vico.core.entry.entryModelOf
 import com.yeditepe.mindup.model.MoodEntry
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TopAppBar
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.material3.OutlinedButton
 import com.yeditepe.mindup.components.PageHeader
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun HomePage(
     modifier: Modifier = Modifier,
@@ -321,48 +303,3 @@ fun EntryCard(entry: MoodEntry, onDelete: () -> Unit) {
     }
 }
 
-@Composable
-fun MoodCarousel(onMoodSelected: (String) -> Unit) {
-    val moods = listOf(
-        "😊 Happy" to "Happy",
-        "😔 Sad" to "Sad",
-        "😰 Anxious" to "Anxious",
-        "😡 Angry" to "Angry",
-        "😴 Tired" to "Tired",
-        "😌 Calm" to "Calm"
-    )
-
-    LazyRow(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        items(moods) { (display, value) ->
-            MoodChip(
-                text = display,
-                onClick = { onMoodSelected(value) }
-            )
-        }
-    }
-}
-
-@Composable
-fun MoodChip(
-    text: String,
-    onClick: () -> Unit
-) {
-    OutlinedButton(
-        onClick = onClick,
-        modifier = Modifier.height(40.dp),
-        shape = RoundedCornerShape(20.dp),
-        colors = ButtonDefaults.outlinedButtonColors(
-            containerColor = Color.White,
-            contentColor = Color.Black
-        ),
-        border = BorderStroke(1.dp, Color(0xFFE0E0E0))
-    ) {
-        Text(
-            text = text,
-            fontSize = 16.sp
-        )
-    }
-}
