@@ -38,15 +38,11 @@ fun SettingsPage(
 ) {
     val context = LocalContext.current
     var showDeleteDialog by remember { mutableStateOf(false) }
-    var showChangeEmailDialog by remember { mutableStateOf(false) }
     var showChangePasswordDialog by remember { mutableStateOf(false) }
     var deleteReason by remember { mutableStateOf("") }
-    var newEmail by remember { mutableStateOf("") }
     var newPassword by remember { mutableStateOf("") }
     var currentPassword by remember { mutableStateOf("") }
-    var confirmNewEmail by remember { mutableStateOf("") }
     var confirmNewPassword by remember { mutableStateOf("") }
-    var emailChangePassword by remember { mutableStateOf("") }
     var showAboutDialog by remember { mutableStateOf(false) }
 
     val currentUser = authViewModel.getCurrentUser()
@@ -71,14 +67,7 @@ fun SettingsPage(
             SettingsItem(
                 icon = Icons.Default.Person,
                 title = "Email",
-                subtitle = currentUser?.email ?: "Not signed in",
-                showDivider = true
-            )
-            SettingsItem(
-                icon = Icons.Default.Email,
-                title = "Change Email",
-                onClick = { showChangeEmailDialog = true },
-                showDivider = true
+                subtitle = currentUser?.email ?: "Not signed in"
             )
             SettingsItem(
                 icon = Icons.Default.Lock,
@@ -122,89 +111,6 @@ fun SettingsPage(
                 "Delete Account",
                 color = Color.Red,
                 fontWeight = FontWeight.Medium
-            )
-        }
-
-        // Change Email Dialog
-        if (showChangeEmailDialog) {
-            AlertDialog(
-                onDismissRequest = { showChangeEmailDialog = false },
-                title = { Text("Change Email") },
-                text = {
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        OutlinedTextField(
-                            value = currentUser?.email ?: "",
-                            onValueChange = { },
-                            label = { Text("Current Email") },
-                            enabled = false,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                        OutlinedTextField(
-                            value = emailChangePassword,
-                            onValueChange = { emailChangePassword = it },
-                            label = { Text("Current Password") },
-                            singleLine = true,
-                            visualTransformation = PasswordVisualTransformation(),
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                        OutlinedTextField(
-                            value = newEmail,
-                            onValueChange = { newEmail = it },
-                            label = { Text("New Email") },
-                            singleLine = true,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                        OutlinedTextField(
-                            value = confirmNewEmail,
-                            onValueChange = { confirmNewEmail = it },
-                            label = { Text("Confirm New Email") },
-                            singleLine = true,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
-                },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            if (newEmail == confirmNewEmail) {
-                                auth.signInWithEmailAndPassword(
-                                    currentUser?.email ?: "",
-                                    emailChangePassword
-                                ).addOnCompleteListener { task ->
-                                    if (task.isSuccessful) {
-                                        authViewModel.updateEmail(newEmail) { success ->
-                                            if (success) {
-                                                showChangeEmailDialog = false
-                                                newEmail = ""
-                                                confirmNewEmail = ""
-                                                emailChangePassword = ""
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        enabled = newEmail.isNotEmpty() &&
-                                confirmNewEmail.isNotEmpty() &&
-                                newEmail == confirmNewEmail &&
-                                emailChangePassword.isNotEmpty()
-                    ) {
-                        Text("Update")
-                    }
-                },
-                dismissButton = {
-                    TextButton(onClick = {
-                        showChangeEmailDialog = false
-                        newEmail = ""
-                        confirmNewEmail = ""
-                        emailChangePassword = ""
-                    }) {
-                        Text("Cancel")
-                    }
-                }
             )
         }
 

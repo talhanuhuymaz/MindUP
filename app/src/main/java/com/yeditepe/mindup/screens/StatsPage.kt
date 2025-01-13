@@ -54,19 +54,6 @@ fun StatsPage(
                 .background(Color(0xFFF8F9FA))
                 .verticalScroll(scrollState)
         ) {
-            // Top App Bar
-            TopAppBar(
-                title = { Text("Mood Analytics") },
-                navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
-                        Icon(Icons.Default.ArrowBack, "Back")
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.White
-                )
-            )
-
             // Content
             Column(
                 modifier = Modifier.padding(16.dp)

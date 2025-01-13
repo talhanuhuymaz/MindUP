@@ -30,6 +30,8 @@ import java.time.format.DateTimeFormatter
 import com.yeditepe.mindup.model.MoodEntry
 import androidx.compose.ui.draw.shadow
 import com.yeditepe.mindup.components.PageHeader
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 @Composable
 fun ProfilePage(
@@ -41,6 +43,7 @@ fun ProfilePage(
 ) {
     val moodEntries = moodViewModel.moodEntries.observeAsState(initial = emptyList())
     val currentUser = authViewModel.getCurrentUser()
+    val scrollState = rememberScrollState()
 
     Column(
         modifier = modifier
@@ -53,238 +56,245 @@ fun ProfilePage(
             onMenuClick = onMenuClick
         )
 
-        // Profil Fotoğrafı ve Bilgiler
-        Card(
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp),
-            colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5)),
-            shape = RoundedCornerShape(12.dp)
+                .fillMaxSize()
+                .verticalScroll(scrollState),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(
+            // Profil Fotoğrafı ve Bilgiler
+            Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .padding(bottom = 8.dp),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5)),
+                shape = RoundedCornerShape(12.dp)
             ) {
-                Box(
+                Column(
                     modifier = Modifier
-                        .size(100.dp)
-                        .background(Color.Gray.copy(alpha = 0.2f), CircleShape)
+                        .fillMaxWidth()
                         .padding(16.dp),
-                    contentAlignment = Alignment.Center
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Person,
-                        contentDescription = "Profile Picture",
-                        modifier = Modifier.size(60.dp),
-                        tint = Color.Gray
+                    Box(
+                        modifier = Modifier
+                            .size(100.dp)
+                            .background(Color.Gray.copy(alpha = 0.2f), CircleShape)
+                            .padding(16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = "Profile Picture",
+                            modifier = Modifier.size(60.dp),
+                            tint = Color.Gray
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = currentUser?.email ?: "Not signed in",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                    Text(
+                        text = "Total Entries: ${moodEntries.value.size}",
+                        fontSize = 16.sp,
+                        color = Color.Gray
                     )
                 }
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = currentUser?.email ?: "Not signed in",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Medium
-                )
-                Text(
-                    text = "Total Entries: ${moodEntries.value.size}",
-                    fontSize = 16.sp,
-                    color = Color.Gray
-                )
             }
-        }
 
-        // Mood Summary
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 4.dp),
-            colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5)),
-            shape = RoundedCornerShape(12.dp)
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp)
+            // Mood Summary
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5)),
+                shape = RoundedCornerShape(12.dp)
             ) {
-                Text(
-                    text = "Mood Summary",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Text(
+                        text = "Mood Summary",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
 
-                // Mood istatistikleri
-                val moodStats = moodEntries.value
-                    .groupBy { it.mood }
-                    .mapValues { it.value.size }
+                    // Mood istatistikleri
+                    val moodStats = moodEntries.value
+                        .groupBy { it.mood }
+                        .mapValues { it.value.size }
 
-                val totalEntries = moodEntries.value.size.toFloat()
+                    val totalEntries = moodEntries.value.size.toFloat()
 
-                moodStats.forEach { (mood, count) ->
-                    val percentage = if (totalEntries > 0) {
-                        (count / totalEntries * 100).toInt()
-                    } else {
-                        0
-                    }
+                    moodStats.forEach { (mood, count) ->
+                        val percentage = if (totalEntries > 0) {
+                            (count / totalEntries * 100).toInt()
+                        } else {
+                            0
+                        }
 
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Image(
-                                painter = painterResource(getMoodIconResource(mood)),
-                                contentDescription = mood,
-                                modifier = Modifier.size(24.dp)
-                            )
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Image(
+                                    painter = painterResource(getMoodIconResource(mood)),
+                                    contentDescription = mood,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                                Text(
+                                    text = " $mood",
+                                    fontSize = 16.sp,
+                                    modifier = Modifier.padding(start = 8.dp)
+                                )
+                            }
                             Text(
-                                text = " $mood",
+                                text = "$count ($percentage%)",
                                 fontSize = 16.sp,
-                                modifier = Modifier.padding(start = 8.dp)
+                                color = Color.Gray
                             )
                         }
-                        Text(
-                            text = "$count ($percentage%)",
-                            fontSize = 16.sp,
-                            color = Color.Gray
-                        )
                     }
                 }
             }
-        }
 
-        // Recent Activity
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 4.dp),
-            colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5)),
-            shape = RoundedCornerShape(12.dp)
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Text(
-                    text = "Recent Activity",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-
-                moodEntries.value.take(3).forEach { entry ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(text = entry.mood)
-                        Text(
-                            text = entry.timestamp.format(DateTimeFormatter.ofPattern("MMM dd, HH:mm")),
-                            color = Color.Gray
-                        )
-                    }
-                }
-            }
-        }
-
-        // Streak Card
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp, bottom = 4.dp)
-                .shadow(
-                    elevation = 8.dp,
-                    shape = RoundedCornerShape(20.dp),
-                    spotColor = Color(0xFF000000).copy(alpha = 0.1f)
-                ),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
-            shape = RoundedCornerShape(20.dp)
-        ) {
-            Row(
+            // Recent Activity
+            Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 24.dp, vertical = 32.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly
+                    .padding(vertical = 4.dp),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5)),
+                shape = RoundedCornerShape(12.dp)
             ) {
-                // Daily Streak
                 Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .weight(1f)
-                        .background(
-                            color = Color(0xFFFFF3E0),
-                            shape = RoundedCornerShape(16.dp)
-                        )
-                        .padding(horizontal = 16.dp, vertical = 20.dp)
+                    modifier = Modifier.padding(16.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.LocalFireDepartment,
-                        contentDescription = "Daily Streak",
-                        tint = Color(0xFFFF9800),
-                        modifier = Modifier.size(32.dp)
-                    )
                     Text(
-                        text = "${calculateDailyStreak(moodEntries.value)}",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF424242),
-                        modifier = Modifier.padding(top = 4.dp)
-                    )
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Text(
-                        text = "Daily",
+                        text = "Recent Activity",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF424242)
+                        modifier = Modifier.padding(bottom = 16.dp)
                     )
-                    Text(
-                        text = "Streak",
-                        fontSize = 16.sp,
-                        color = Color(0xFF757575)
-                    )
+
+                    moodEntries.value.take(3).forEach { entry ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(text = entry.mood)
+                            Text(
+                                text = entry.timestamp.format(DateTimeFormatter.ofPattern("MMM dd, HH:mm")),
+                                color = Color.Gray
+                            )
+                        }
+                    }
                 }
+            }
 
-                Spacer(modifier = Modifier.width(16.dp))
-
-                // Mood Streak
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
+            // Streak Card
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp, bottom = 4.dp)
+                    .shadow(
+                        elevation = 8.dp,
+                        shape = RoundedCornerShape(20.dp),
+                        spotColor = Color(0xFF000000).copy(alpha = 0.1f)
+                    ),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                shape = RoundedCornerShape(20.dp)
+            ) {
+                Row(
                     modifier = Modifier
-                        .weight(1f)
-                        .background(
-                            color = Color(0xFFF3E5F5),
-                            shape = RoundedCornerShape(16.dp)
-                        )
-                        .padding(horizontal = 16.dp, vertical = 20.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp, vertical = 32.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    val currentMoodStreak = calculateMoodStreakWithMood(moodEntries.value)
-                    Image(
-                        painter = painterResource(getMoodIconResource(currentMoodStreak.first)),
-                        contentDescription = "Mood Streak",
-                        modifier = Modifier.size(32.dp)
-                    )
-                    Text(
-                        text = "${currentMoodStreak.second}",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF424242),
-                        modifier = Modifier.padding(top = 4.dp)
-                    )
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Text(
-                        text = "Same Mood",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF424242)
-                    )
-                    Text(
-                        text = "Streak",
-                        fontSize = 16.sp,
-                        color = Color(0xFF757575)
-                    )
+                    // Daily Streak
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .weight(1f)
+                            .background(
+                                color = Color(0xFFFFF3E0),
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                            .padding(horizontal = 16.dp, vertical = 20.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.LocalFireDepartment,
+                            contentDescription = "Daily Streak",
+                            tint = Color(0xFFFF9800),
+                            modifier = Modifier.size(32.dp)
+                        )
+                        Text(
+                            text = "${calculateDailyStreak(moodEntries.value)}",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF424242),
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Text(
+                            text = "Daily",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF424242)
+                        )
+                        Text(
+                            text = "Streak",
+                            fontSize = 16.sp,
+                            color = Color(0xFF757575)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    // Mood Streak
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .weight(1f)
+                            .background(
+                                color = Color(0xFFF3E5F5),
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                            .padding(horizontal = 16.dp, vertical = 20.dp)
+                    ) {
+                        val currentMoodStreak = calculateMoodStreakWithMood(moodEntries.value)
+                        Image(
+                            painter = painterResource(getMoodIconResource(currentMoodStreak.first)),
+                            contentDescription = "Mood Streak",
+                            modifier = Modifier.size(32.dp)
+                        )
+                        Text(
+                            text = "${currentMoodStreak.second}",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF424242),
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Text(
+                            text = "Same Mood",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF424242)
+                        )
+                        Text(
+                            text = "Streak",
+                            fontSize = 16.sp,
+                            color = Color(0xFF757575)
+                        )
+                    }
                 }
             }
         }
