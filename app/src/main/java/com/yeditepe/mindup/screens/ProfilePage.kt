@@ -41,6 +41,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
+import android.content.Context
+import androidx.compose.ui.platform.LocalContext
 
 private val avatarList = listOf(
     R.drawable.fox,
@@ -49,6 +51,19 @@ private val avatarList = listOf(
     R.drawable.joker,
 
 )
+
+// SharedPreferences için extension functions
+private fun Context.saveAvatar(avatarId: Int) {
+    getSharedPreferences("profile_prefs", Context.MODE_PRIVATE)
+        .edit()
+        .putInt("selected_avatar", avatarId)
+        .apply()
+}
+
+private fun Context.getStoredAvatar(): Int {
+    return getSharedPreferences("profile_prefs", Context.MODE_PRIVATE)
+        .getInt("selected_avatar", R.drawable.fox) // varsayılan avatar
+}
 
 @Composable
 fun ProfilePage(
@@ -61,7 +76,10 @@ fun ProfilePage(
     val currentUser = authViewModel.getCurrentUser()
     val scrollState = rememberScrollState()
     var showAvatarDialog by remember { mutableStateOf(false) }
-    var selectedAvatar by remember { mutableStateOf(R.drawable.fox) }
+    val context = LocalContext.current
+    var selectedAvatar by remember { 
+        mutableStateOf(context.getStoredAvatar())
+    }
 
     Column(
         modifier = modifier
@@ -330,6 +348,7 @@ fun ProfilePage(
                                     .clip(CircleShape)
                                     .clickable {
                                         selectedAvatar = avatar
+                                        context.saveAvatar(avatar)  // Seçimi SharedPreferences'a kaydet
                                         showAvatarDialog = false
                                     }
                             )
