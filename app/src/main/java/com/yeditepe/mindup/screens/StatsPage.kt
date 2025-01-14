@@ -316,7 +316,7 @@ private fun generateInsights(entries: List<MoodEntry>): List<String> {
 }
 
 @Composable
-private fun WeeklyMoodDistribution(entries: List<MoodEntry>) {
+private fun  WeeklyMoodDistribution(entries: List<MoodEntry>) {
     val weeklyStats = getWeeklyStats(entries)
     Row(
         modifier = Modifier.fillMaxWidth(),

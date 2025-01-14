@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.sp
 import com.yeditepe.mindup.R
 
 data class MoodItem(
-    val imageRes: Int,  // Resim kaynağının ID'si
+    val imageRes: Int,
     val name: String
 )
 
@@ -82,7 +82,7 @@ private fun MoodCard(
             Image(
                 painter = painterResource(id = mood.imageRes),
                 contentDescription = mood.name,
-                modifier = Modifier.size(40.dp)  // Resim boyutunu ayarlayabilirsiniz
+                modifier = Modifier.size(40.dp)
             )
         }
         Spacer(modifier = Modifier.height(4.dp))
