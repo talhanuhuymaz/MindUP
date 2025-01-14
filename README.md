@@ -1,38 +1,43 @@
+# MindUP - Mood Tracking Application
 
+## 📱 About
+MindUP is an Android application that helps users track their daily moods, analyze emotional patterns, and increase emotional awareness.
 
-# MindUP - Ruh Hali Takip Uygulaması
+## 🌟 Features
+- **Mood Tracking**: Record your daily moods and notes
+- **Statistics**: View your mood trends and weekly analyses
+- **Profile Customization**: Choose avatars and manage your profile
+- **Motivation Page**: Daily motivation messages and activity suggestions
+- **Secure Login**: User management with Firebase Authentication
+- **Local Storage**: Offline data storage with Room Database
 
-## 📱 Proje Hakkında
-MindUP, kullanıcıların günlük ruh hallerini takip edebilecekleri, analiz edebilecekleri ve duygusal farkındalıklarını artırabilecekleri bir Android uygulamasıdır.
+## 🛠️ Technologies
+- **Kotlin**: Primary programming language
+- **Jetpack Compose**: Modern UI development
+- **Material Design 3**: Visual design
+- **Firebase Auth**: User management
+- **Room Database**: Local data storage
+- **MVVM**: Architecture pattern
+- **Coroutines**: Asynchronous operations
+- **LiveData**: Data flow management
 
-## 🌟 Özellikler
-- **Ruh Hali Kaydı**: Günlük duygu durumunuzu ve notlarınızı kaydedin
-- **İstatistikler**: Ruh hali trendlerinizi ve haftalık analizlerinizi görüntüleyin
-- **Profil Özelleştirme**: Kişisel avatar seçimi ve profil yönetimi
-- **Motivasyon Sayfası**: Günlük motivasyon mesajları ve aktivite önerileri
-- **Güvenli Giriş**: Firebase Authentication ile güvenli kullanıcı yönetimi
-- **Yerel Veri Depolama**: Room Database ile offline veri saklama
+## 📥 Installation
+1. Clone the project:
+```bash
+git clone https://github.com/username/MindUP.git
+```
+2. Open in Android Studio
 
-## 🛠️ Teknolojiler
-- **Kotlin**: Ana programlama dili
-- **Jetpack Compose**: Modern UI geliştirme
-- **Material Design 3**: Görsel tasarım
-- **Firebase Auth**: Kullanıcı yönetimi
-- **Room Database**: Yerel veri depolama
-- **MVVM**: Mimari pattern
-- **Coroutines**: Asenkron işlemler
-- **LiveData**: Veri akışı yönetimi
+3. Wait for dependencies to sync
 
-## 🔑 Gereksinimler
-- Android Studio Arctic Fox veya üzeri
+4. Run the application
+
+## 🔑 Requirements
+- Android Studio Arctic Fox or higher
 - Minimum SDK 26 (Android 8.0)
 - Kotlin 1.9.x
 - JDK 8
-
-## 📱 Ekran Görüntüleri
-[Ekran görüntüleri buraya eklenecek]
-
-
-## 📄 Lisans
-Bu proje [MIT lisansı](LICENSE) altında lisanslanmıştır.
+- 
+## 📄 License
+This project is licensed under the [MIT License](LICENSE).
 
